@@ -3,13 +3,15 @@ const server = new WebSocket.Server({ port: 3000 });
 
 const peers = [];
 
-server.on('connection', (socket) => {
+server.on('connection', (socket, request) => {
     peers.push(socket);
-    console.log('新しいクライアントが接続しました');
+    console.log('新しいクライアントが接続しました:');
+    const clientIp = request.socket.address();
 
     socket.on('message', (message) => {
         const messageString = message.toString('utf-8'); // Bufferを文字列に変換
-        console.log('メッセージを受信:', messageString);
+        console.log('メッセージを受信 @ ', clientIp);
+        console.log(messageString);
         // 他のすべてのクライアントにメッセージをブロードキャスト
         peers.forEach((peer) => {
             if (peer !== socket && peer.readyState === WebSocket.OPEN) {
